@@ -2,14 +2,8 @@ import os
 os.environ['HF_ENDPOINT']='https://hf-mirror.com'
 import torch
 import torch.nn as nn
-from transformers import CLIPTextModel, CLIPTokenizer
-from datasets import DatasetDict, load_dataset
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 import uuid
-from model import create_student_model, create_student_model_config, create_teacher_model
-from safetensors.torch import load_file
-from data import load_captions_dataset, preprocess_data
 from utils import intermediate_loss
 # 蒸馏训练函数
 def distill_train(teacher_model, student_model, train_dataloader, val_dataloader, epochs=3, lr=1e-5,device="cuda"):

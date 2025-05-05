@@ -2,6 +2,8 @@ from datasets import load_dataset, Dataset, DatasetDict
 from torch.utils.data import DataLoader
 import logging
 from tqdm import tqdm
+import os
+import requests
 
 
 def create_captions_dataset():
@@ -47,6 +49,35 @@ def create_captions_dataset():
 
     logging.info("Processing complete!")
 
+def get_real_image():
+    # Load the COCO 2017 dataset
+    ds = load_dataset("phiyodr/coco2017", cache_dir="./coco_cache",split="validation")
+    # 只保留前500条数据
+    ds = ds.select(range(500))
+    # 只保留coco_url和captions字段
+    ds = ds.remove_columns([col for col in ds.column_names if col not in ["coco_url", "captions"]])
+    # 展开captions字段，每个caption配对coco_url，形成新的数据项
+    new_data = {"coco_url": [], "caption": []}
+    for example in ds:
+        for caption in example["captions"]:
+            new_data["coco_url"].append(example["coco_url"])
+            new_data["caption"].append(caption)
+    ds = Dataset.from_dict(new_data)
+    # 只保留前500条数据
+    ds = ds.select(range(500))
+    if not os.path.exists("real_images"):
+        os.makedirs("real_images")
+    for i, example in enumerate(ds):
+        url = example["coco_url"]
+        img_path = os.path.join("real_images", f"image_{i}.jpg")
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            with open(img_path, "wb") as f:
+                f.write(response.content)
+        except Exception as e:
+            logging.error(f"Failed to download {url} as image_{i}.jpg: {e}")
+    logging.info("All images downloaded successfully!")
 
 def load_captions_dataset():
     # Load the dataset from disk

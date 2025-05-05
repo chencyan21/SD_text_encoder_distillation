@@ -2,25 +2,8 @@ from transformers import CLIPTextModel, CLIPTextConfig
 import torch
 import torch
 from diffusers import StableDiffusionPipeline
-from transformers import CLIPTokenizer, CLIPTextModel
-from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler
-from PIL import Image
-import numpy as np
+from transformers import CLIPTextModel
 import gc
-
-# # 创建教师模型
-# def create_teacher_model(model_id, device):
-#     # 加载模型
-#     pipe = StableDiffusionPipeline.from_pretrained(
-#         model_id, torch_dtype=torch.float16
-#     ).to(device)
-#     teacher_model = pipe.text_encoder
-#     tokenizer = pipe.tokenizer
-#     # 教师模型输出有两个：last hidden state和pooler output
-#     # 1. last hidden state：形状为[batch_size, max_length, hidden_size]
-#     # 2. pooler output：形状为[batch_size, hidden_size]
-#     return teacher_model,tokenizer
-
 
 # 创建教师模型，优化显存
 def create_teacher_model(model_id, device):

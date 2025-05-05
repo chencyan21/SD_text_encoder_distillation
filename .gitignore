@@ -1,0 +1,8 @@
+tea_model_images
+stu_model_images
+real_images
+.vscode
+__pycache__
+captions_dataset
+coco_cache
+student_model_epoch40_e457a80a-6f61-40e3-987f-d3d2f655d7f7
